@@ -1,4 +1,4 @@
-package com.win.sumsub.service;
+package com.win.sumsub.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.win.sumsub.model.*;
@@ -27,7 +27,7 @@ import java.util.UUID;
 
 public class AppTokenJavaExample {
     // The description of the authorization method is available here: https://docs.sumsub.com/reference/authentication
-    private static final String SUMSUB_SECRET_KEY = ""; // Example: Hej2ch71kG2kTd1iIUDZFNsO5C1lh5Gq
+    private static final String SUMSUB_SECRET_KEY = "hnwGV08m6FrxdHrVptDnFHV0nGcpFFT6"; // Example: Hej2ch71kG2kTd1iIUDZFNsO5C1lh5Gq
     private static final String SUMSUB_APP_TOKEN = "prd:zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY"; // Example: sbx:uY0CgwELmgUAEyl4hNWxLngb.0WSeQeiYny4WEqmAALEAiK2qTC96fBad
     private static final String SUMSUB_TEST_BASE_URL = "https://api.sumsub.com";
     //Please don't forget to change token and secret key values to production ones when switching to production
@@ -63,7 +63,7 @@ public class AppTokenJavaExample {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
         String formattedUtc = formatter.format(nowUtc);
         //create request body
-        FinanceRequest finRequest = FinanceRequest.builder()
+        FinanceRequest finRequest =  new FinanceRequest.Builder()
                 .txnId(UUID.randomUUID().toString())
                 .txnDate(formattedUtc)
                 .type("finance")
@@ -87,21 +87,22 @@ public class AppTokenJavaExample {
 
     }
 
-    public static String createApplicant(String externalUserId, String levelName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        // https://docs.sumsub.com/reference/create-applicant
-
-        Applicant applicant = new Applicant(externalUserId);
-
-        Response response = sendPost(
-                "/resources/applicants?levelName=" + URLEncoder.encode(levelName, StandardCharsets.UTF_8.toString()),
-                RequestBody.create(
-                        objectMapper.writeValueAsString(applicant),
-                        MediaType.parse("application/json; charset=utf-8")));
-
-        ResponseBody responseBody = response.body();
-
-        return responseBody != null ? objectMapper.readValue(responseBody.string(), Applicant.class).getId() : null;
-    }
+//    public static String createApplicant(String externalUserId, String levelName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+//        // https://docs.sumsub.com/reference/create-applicant
+//
+//        FinanceRequest.Applicant applicant = new FinanceRequest.Applicant(null,externalUserId,null);
+//
+//        Response response = sendPost(
+//                "/resources/applicants?levelName=" + URLEncoder.encode(levelName, StandardCharsets.UTF_8.toString()),
+//                RequestBody.create(
+//                        objectMapper.writeValueAsString(applicant),
+//                        MediaType.parse("application/json; charset=utf-8")));
+//
+//        ResponseBody responseBody = response.body();
+//
+////        return responseBody != null ? objectMapper.readValue(responseBody.string(), FinanceRequest.Applicant.class).getId() : null;
+//        return  responseBody;
+//    }
 
     public static String addDocument(String applicantId, File doc) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
         // https://docs.sumsub.com/reference/add-id-documents
@@ -138,7 +139,7 @@ public class AppTokenJavaExample {
         long ts = Instant.now().getEpochSecond();
 
         Request request = new Request.Builder()
-                .url(SUMSUB_TEST_BASE_URL + url)
+                .url( url)
                 .header("X-App-Token", SUMSUB_APP_TOKEN)
                 .header("X-App-Access-Sig", createSignature(ts, HttpMethod.POST, url, requestBodyToBytes(requestBody)))
                 .header("X-App-Access-Ts", String.valueOf(ts))
