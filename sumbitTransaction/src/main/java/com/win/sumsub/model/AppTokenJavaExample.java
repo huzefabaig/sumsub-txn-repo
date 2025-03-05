@@ -87,53 +87,7 @@ public class AppTokenJavaExample {
 
     }
 
-//    public static String createApplicant(String externalUserId, String levelName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-//        // https://docs.sumsub.com/reference/create-applicant
-//
-//        FinanceRequest.Applicant applicant = new FinanceRequest.Applicant(null,externalUserId,null);
-//
-//        Response response = sendPost(
-//                "/resources/applicants?levelName=" + URLEncoder.encode(levelName, StandardCharsets.UTF_8.toString()),
-//                RequestBody.create(
-//                        objectMapper.writeValueAsString(applicant),
-//                        MediaType.parse("application/json; charset=utf-8")));
-//
-//        ResponseBody responseBody = response.body();
-//
-////        return responseBody != null ? objectMapper.readValue(responseBody.string(), FinanceRequest.Applicant.class).getId() : null;
-//        return  responseBody;
-//    }
 
-    public static String addDocument(String applicantId, File doc) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
-        // https://docs.sumsub.com/reference/add-id-documents
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("metadata", objectMapper.writeValueAsString(new Metadata(DocType.PASSPORT, "DEU")))
-                .addFormDataPart("content", doc.getName(), RequestBody.create(doc, MediaType.parse("image/*")))
-                .build();
-
-        Response response = sendPost("/resources/applicants/" + applicantId + "/info/idDoc", requestBody);
-        return response.headers().get("X-Image-Id");
-    }
-
-    public static String getApplicantStatus(String applicantId) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
-        // https://docs.sumsub.com/reference/get-applicant-verification-steps-status
-
-        Response response = sendGet("/resources/applicants/" + applicantId + "/requiredIdDocsStatus");
-
-        ResponseBody responseBody = response.body();
-        return responseBody != null ? responseBody.string() : null;
-    }
-
-    public static String getAccessToken(String externalUserId, String levelName) throws NoSuchAlgorithmException, InvalidKeyException, IOException {
-        // https://docs.sumsub.com/reference/generate-access-token-query
-
-        Response response = sendPost("/resources/accessTokens?userId=" + URLEncoder.encode(externalUserId, StandardCharsets.UTF_8.toString()) + "&levelName=" + URLEncoder.encode(levelName, StandardCharsets.UTF_8.toString()), RequestBody.create(new byte[0], null));
-
-        ResponseBody responseBody = response.body();
-        return responseBody != null ? responseBody.string() : null;
-    }
 
     private static Response sendPost(String url, RequestBody requestBody) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
         long ts = Instant.now().getEpochSecond();
