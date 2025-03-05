@@ -1,10 +1,7 @@
 package com.win.sumsub.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.win.sumsub.model.Applicant;
-import com.win.sumsub.model.DocType;
-import com.win.sumsub.model.HttpMethod;
-import com.win.sumsub.model.Metadata;
+import com.win.sumsub.model.*;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -24,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class AppTokenJavaExample {
@@ -60,7 +59,19 @@ public class AppTokenJavaExample {
 //        String accessTokenStr = getAccessToken(externalUserId, levelName);
         String accessTokenStr = "prd:zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY";
         System.out.println("Access token (json string): " + accessTokenStr);
+        Instant nowUtc = Instant.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
+        String formattedUtc = formatter.format(nowUtc);
+        //create request body
+        FinanceRequest request = FinanceRequest.builder()
+                .txnId(UUID.randomUUID().toString())
+                .txnDate(formattedUtc)
+                .type("finance")
+                .info( new FinanceRequest.Info("out",1000,"EUR"))
+                .applicant( new FinanceRequest.Applicant("company","31699","Winjit South Africa Pty Ltd"))
+                .build();
 
+        //fire that request body
 
     }
 

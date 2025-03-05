@@ -1,10 +1,16 @@
 package com.win.sumsub.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jdk.nashorn.internal.objects.annotations.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
-
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FinanceRequest {
 
     @JsonProperty("txnId")
@@ -23,6 +29,7 @@ public class FinanceRequest {
     private Applicant applicant;
 
     @Data
+    @AllArgsConstructor
     public static class Info {
         @JsonProperty("direction")
         private String direction;
@@ -35,6 +42,7 @@ public class FinanceRequest {
     }
 
     @Data
+    @AllArgsConstructor
     public static class Applicant {
         @JsonProperty("type")
         private String type;
