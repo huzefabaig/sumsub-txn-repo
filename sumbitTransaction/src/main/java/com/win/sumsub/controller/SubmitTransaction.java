@@ -16,9 +16,11 @@ import java.time.Instant;
 @RestController
 public class SubmitTransaction {
 
+//    prd:zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY
+//    secret key hnwGV08m6FrxdHrVptDnFHV0nGcpFFT6
     private static final String SUMSUB_API_URL = "https://api.sumsub.com/resources/applicants/67c590dafa06707def346e15/kyt/txns/-/data";
-    private static final String APP_TOKEN = "your_app_token";
-    private static final String SECRET_KEY = "your_secret_key";
+    private static final String APP_TOKEN = "zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY";
+    private static final String SECRET_KEY = "hnwGV08m6FrxdHrVptDnFHV0nGcpFFT6";
 
     @PostMapping("/submitTransaction")
     public String submitTransaction() {
