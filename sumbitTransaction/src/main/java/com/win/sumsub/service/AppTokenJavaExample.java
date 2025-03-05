@@ -63,13 +63,25 @@ public class AppTokenJavaExample {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
         String formattedUtc = formatter.format(nowUtc);
         //create request body
-        FinanceRequest request = FinanceRequest.builder()
+        FinanceRequest finRequest = FinanceRequest.builder()
                 .txnId(UUID.randomUUID().toString())
                 .txnDate(formattedUtc)
                 .type("finance")
                 .info( new FinanceRequest.Info("out",1000,"EUR"))
                 .applicant( new FinanceRequest.Applicant("company","31699","Winjit South Africa Pty Ltd"))
                 .build();
+
+        String url = "\n" +
+                "https://api.sumsub.com/resources/applicants/67c590dafa06707def346e15/kyt/txns/-/data";
+        long ts = Instant.now().getEpochSecond();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(finRequest);
+
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        RequestBody requestBody = RequestBody.create(json, mediaType);
+
+        Response response = sendPost(url, requestBody);
+        System.out.println("Response "+ response);
 
         //fire that request body
 
