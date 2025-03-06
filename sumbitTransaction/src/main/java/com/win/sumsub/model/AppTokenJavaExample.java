@@ -41,42 +41,18 @@ public class AppTokenJavaExample {
         // 4) Getting access token
 
         String externalUserId = "31699";
-        String levelName = "basic-kyc-level";
-
-//        String applicantId = createApplicant(externalUserId, levelName);
         String applicantId = "67c590dafa06707def346e15";
         System.out.println("The applicant (" + externalUserId + ") was successfully created: " + applicantId);
 
-//        String imageId = addDocument(applicantId, new File(AppTokenJavaExample.class.getResource("/images/sumsub-logo.png").getFile()));
-//        System.out.println("Identifier of the added document: " + imageId);
-
-//        String applicantStatusStr = getApplicantStatus(applicantId);
-//        System.out.println("Applicant status (json string): " + applicantStatusStr);
-
-//        String accessTokenStr = getAccessToken(externalUserId, levelName);
         String accessTokenStr = "zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY";
         System.out.println("Access token (json string): " + accessTokenStr);
-        Instant nowUtc = Instant.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
-        String formattedUtc = formatter.format(nowUtc);
-        //create request body
-//        FinanceRequest finRequest =  new FinanceRequest.Builder()
-//                .txnId(UUID.randomUUID().toString())
-//                .txnDate(formattedUtc)
-//                .type("finance")
-//                .info( new FinanceRequest.Info("out",1000,"EUR"))
-//                .applicant( new FinanceRequest.Applicant("company","31699","Winjit South Africa Pty Ltd"))
-//                .build();
+
 
         String url = "\n" +
                 "https://api.sumsub.com/resources/applicants/67c590dafa06707def346e15/kyt/txns/-/data";
         long ts = Instant.now().getEpochSecond();
         ObjectMapper objectMapper = new ObjectMapper();
         RequestBody requestBody1 = createRequestBody(url);
-//        String json = objectMapper.writeValueAsString(requestBody1);
-//
-//        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-//        RequestBody requestBody = RequestBody.create(json, mediaType);
 
         Response response = sendPost(url, requestBody1);
         System.out.println("Response "+ response);
@@ -223,11 +199,6 @@ public class AppTokenJavaExample {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(requestBodyJson.toString(), mediaType);
 
-//        Request request = new Request.Builder()
-//                .url("YOUR_API_ENDPOINT") // Replace with your API endpoint
-//                .post(body)
-//                .addHeader("Content-Type", "application/json")
-//                .build();
 
        return body;
     }
