@@ -1,5 +1,6 @@
 package com.win.sumsub.model;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -55,11 +56,34 @@ public class AppTokenJavaExample {
         RequestBody requestBody1 = createRequestBody(url);
 
         Response response = sendPost(url, requestBody1);
-        System.out.println("Response "+ response);
+        System.out.println("Response "+ response.toString());
 
-        //fire that request body
+        if (response.isSuccessful()) {
+            String responseBody = response.body().string();
+            System.out.println("Response Body: " + responseBody);
 
-    }
+            try {
+                ObjectMapper objectMapper1 = new ObjectMapper();
+                JsonNode jsonNode = objectMapper1.readTree(responseBody);
+                if (jsonNode.has("correlationId")) {
+                    String correlationId = jsonNode.get("correlationId").asText();
+                    System.out.println("Correlation ID: " + correlationId);
+                } else {
+                    System.out.println("Correlation ID not found in response.");
+                }
+            } catch (IOException e) {
+                System.err.println("Error parsing JSON response: " + e.getMessage());
+            }
+        } else {
+            System.err.println("Request failed with code: " + response.code());
+            if(response.body() != null){
+                System.err.println("Error Body: " + response.body().string());
+            }
+        }
+
+
+
+}
 
 
 
@@ -73,7 +97,7 @@ public class AppTokenJavaExample {
                 .header("X-App-Access-Ts", String.valueOf(ts))
                 .post(requestBody)
                 .build();
-
+        System.out.println("Req Headers "+request.toString());
         Response response = new OkHttpClient().newCall(request).execute();
 
         if (response.code() != 200 && response.code() != 201) {
@@ -84,26 +108,26 @@ public class AppTokenJavaExample {
         return response;
     }
 
-    private static Response sendGet(String url) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
-        long ts = Instant.now().getEpochSecond();
-
-        Request request = new Request.Builder()
-                .url(SUMSUB_TEST_BASE_URL + url)
-                .header("X-App-Token", SUMSUB_APP_TOKEN)
-                .header("X-App-Access-Sig", createSignature(ts, HttpMethod.GET, url, null))
-                .header("X-App-Access-Ts", String.valueOf(ts))
-                .get()
-                .build();
-
-        Response response = new OkHttpClient().newCall(request).execute();
-
-        if (response.code() != 200 && response.code() != 201) {
-            // https://docs.sumsub.com/reference/review-api-health
-            // If an unsuccessful answer is received, please log the value of the "correlationId" parameter.
-            // Then perhaps you should throw the exception. (depends on the logic of your code)
-        }
-        return response;
-    }
+//    private static Response sendGet(String url) throws IOException, InvalidKeyException, NoSuchAlgorithmException {
+//        long ts = Instant.now().getEpochSecond();
+//
+//        Request request = new Request.Builder()
+//                .url(SUMSUB_TEST_BASE_URL + url)
+//                .header("X-App-Token", SUMSUB_APP_TOKEN)
+//                .header("X-App-Access-Sig", createSignature(ts, HttpMethod.GET, url, null))
+//                .header("X-App-Access-Ts", String.valueOf(ts))
+//                .get()
+//                .build();
+//
+//        Response response = new OkHttpClient().newCall(request).execute();
+//
+//        if (response.code() != 200 && response.code() != 201) {
+//            // https://docs.sumsub.com/reference/review-api-health
+//            // If an unsuccessful answer is received, please log the value of the "correlationId" parameter.
+//            // Then perhaps you should throw the exception. (depends on the logic of your code)
+//        }
+//        return response;
+//    }
 
     private static String createSignature(long ts, HttpMethod httpMethod, String path, byte[] body) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha256 = Mac.getInstance("HmacSHA256");
@@ -120,6 +144,7 @@ public class AppTokenJavaExample {
     }
 
     static RequestBody createRequestBody(String url){
+
         OkHttpClient client = new OkHttpClient();
 
         JSONObject requestBodyJson = new JSONObject();
@@ -144,6 +169,10 @@ public class AppTokenJavaExample {
         applicantAddress.put("country", "ZAF");
         applicantAddress.put("formattedAddress", "Some Address, South Africa");
         applicant.put("address", applicantAddress);
+        applicant.put("externalUserId", "31699");
+        applicant.put("id", "67c590dafa06707def346e15");
+        applicant.put("fullName", "Winjit South Africa Pty Ltd,");
+
 
         JSONObject paymentMethodApplicant = new JSONObject();
         paymentMethodApplicant.put("type", "card");
@@ -174,7 +203,6 @@ public class AppTokenJavaExample {
         requestBodyJson.put("applicant", applicant);
 
         JSONObject counterparty = new JSONObject();
-        counterparty.put("externalUserId", "some_external_user_id");
         counterparty.put("fullName", "Some Name");
         counterparty.put("type", "individual");
 
@@ -198,7 +226,7 @@ public class AppTokenJavaExample {
 
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(requestBodyJson.toString(), mediaType);
-
+        System.out.println("ReqBody "+requestBodyJson.toString());
 
        return body;
     }
