@@ -1,22 +1,17 @@
 package com.win.sumsub.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.win.sumsub.model.*;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okio.Buffer;
 import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -143,6 +138,95 @@ public class AppTokenJavaExample {
         Buffer buffer = new Buffer();
         requestBody.writeTo(buffer);
         return buffer.readByteArray();
+    }
+
+    Request createRequestBody(){
+        OkHttpClient client = new OkHttpClient();
+
+        JSONObject requestBodyJson = new JSONObject();
+
+        // Dynamic Request Body Creation
+        String txnId = UUID.randomUUID().toString();
+        OffsetDateTime utcTime = OffsetDateTime.now(ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX");
+        String formattedUtc = utcTime.format(formatter);
+
+        requestBodyJson.put("txnId", txnId);
+        requestBodyJson.put("txnDate", formattedUtc);
+
+        JSONObject info = new JSONObject();
+        info.put("direction", "out");
+        info.put("amount", 1000);
+        info.put("currencyCode", "EUR");
+        requestBodyJson.put("info", info);
+
+        JSONObject applicant = new JSONObject();
+        JSONObject applicantAddress = new JSONObject();
+        applicantAddress.put("country", "ZAF");
+        applicantAddress.put("formattedAddress", "Some Address, South Africa");
+        applicant.put("address", applicantAddress);
+
+        JSONObject paymentMethodApplicant = new JSONObject();
+        paymentMethodApplicant.put("type", "card");
+        paymentMethodApplicant.put("accountId", "eg_hash_of_credit_card_number_ZA");
+        paymentMethodApplicant.put("issuingCountry", "ZAF");
+        applicant.put("paymentMethod", paymentMethodApplicant);
+
+        JSONObject device = new JSONObject();
+        JSONObject ipInfo = new JSONObject();
+        ipInfo.put("ip", "192.168.1.1");
+        ipInfo.put("countryCode3", "ZAF");
+        ipInfo.put("city", "Cape Town");
+        ipInfo.put("lat", -33.9249);
+        ipInfo.put("lon", 18.4241);
+        ipInfo.put("riskyAsn", false);
+        device.put("ipInfo", ipInfo);
+
+        JSONObject userAgentInfo = new JSONObject();
+        userAgentInfo.put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+        device.put("userAgentInfo", userAgentInfo);
+        device.put("fingerprint","some_fingerprint");
+        applicant.put("device",device);
+
+        JSONObject institutionInfoApplicant = new JSONObject();
+        institutionInfoApplicant.put("code", "ZABANKCODE");
+        institutionInfoApplicant.put("name", "Some Bank");
+        applicant.put("institutionInfo", institutionInfoApplicant);
+        requestBodyJson.put("applicant", applicant);
+
+        JSONObject counterparty = new JSONObject();
+        counterparty.put("externalUserId", "some_external_user_id");
+        counterparty.put("fullName", "Some Name");
+        counterparty.put("type", "individual");
+
+        JSONObject paymentMethodCounterparty = new JSONObject();
+        paymentMethodCounterparty.put("type", "account");
+        paymentMethodCounterparty.put("accountId", "eg_hash_of_iban_CH");
+        paymentMethodCounterparty.put("issuingCountry", "CHE");
+        counterparty.put("paymentMethod", paymentMethodCounterparty);
+
+        JSONObject institutionInfoCounterparty = new JSONObject();
+        institutionInfoCounterparty.put("name", "Credit Swiss (Schweiz)");
+        institutionInfoCounterparty.put("code", "CRESCHZZXXX");
+        counterparty.put("institutionInfo", institutionInfoCounterparty);
+
+        requestBodyJson.put("counterparty", counterparty);
+
+        JSONObject props = new JSONObject();
+        props.put("customProperty", "Custom value that can be used in rules");
+        props.put("dailyOutLimit", "10000");
+        requestBodyJson.put("props", props);
+
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(requestBodyJson.toString(), mediaType);
+
+        Request request = new Request.Builder()
+                .url("YOUR_API_ENDPOINT") // Replace with your API endpoint
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+       return request;
     }
 
 }
