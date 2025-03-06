@@ -8,6 +8,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.Buffer;
 import org.apache.commons.codec.binary.Hex;
+import org.json.JSONObject;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -52,30 +54,31 @@ public class AppTokenJavaExample {
 //        System.out.println("Applicant status (json string): " + applicantStatusStr);
 
 //        String accessTokenStr = getAccessToken(externalUserId, levelName);
-        String accessTokenStr = "prd:zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY";
+        String accessTokenStr = "zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY";
         System.out.println("Access token (json string): " + accessTokenStr);
         Instant nowUtc = Instant.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
         String formattedUtc = formatter.format(nowUtc);
         //create request body
-        FinanceRequest finRequest =  new FinanceRequest.Builder()
-                .txnId(UUID.randomUUID().toString())
-                .txnDate(formattedUtc)
-                .type("finance")
-                .info( new FinanceRequest.Info("out",1000,"EUR"))
-                .applicant( new FinanceRequest.Applicant("company","31699","Winjit South Africa Pty Ltd"))
-                .build();
+//        FinanceRequest finRequest =  new FinanceRequest.Builder()
+//                .txnId(UUID.randomUUID().toString())
+//                .txnDate(formattedUtc)
+//                .type("finance")
+//                .info( new FinanceRequest.Info("out",1000,"EUR"))
+//                .applicant( new FinanceRequest.Applicant("company","31699","Winjit South Africa Pty Ltd"))
+//                .build();
 
         String url = "\n" +
                 "https://api.sumsub.com/resources/applicants/67c590dafa06707def346e15/kyt/txns/-/data";
         long ts = Instant.now().getEpochSecond();
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(finRequest);
+        RequestBody requestBody1 = createRequestBody(url);
+//        String json = objectMapper.writeValueAsString(requestBody1);
+//
+//        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+//        RequestBody requestBody = RequestBody.create(json, mediaType);
 
-        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
-        RequestBody requestBody = RequestBody.create(json, mediaType);
-
-        Response response = sendPost(url, requestBody);
+        Response response = sendPost(url, requestBody1);
         System.out.println("Response "+ response);
 
         //fire that request body
@@ -140,7 +143,7 @@ public class AppTokenJavaExample {
         return buffer.readByteArray();
     }
 
-    Request createRequestBody(){
+    static RequestBody createRequestBody(String url){
         OkHttpClient client = new OkHttpClient();
 
         JSONObject requestBodyJson = new JSONObject();
@@ -220,13 +223,13 @@ public class AppTokenJavaExample {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(requestBodyJson.toString(), mediaType);
 
-        Request request = new Request.Builder()
-                .url("YOUR_API_ENDPOINT") // Replace with your API endpoint
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .build();
+//        Request request = new Request.Builder()
+//                .url("YOUR_API_ENDPOINT") // Replace with your API endpoint
+//                .post(body)
+//                .addHeader("Content-Type", "application/json")
+//                .build();
 
-       return request;
+       return body;
     }
 
 }
