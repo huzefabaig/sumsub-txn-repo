@@ -48,14 +48,13 @@ public class AppTokenJavaExample {
         String accessTokenStr = "zwdwXLVqVnQWtod6oXbKoq2D.nq9snqfJDjpCx2mJpp3mACKxQEIPhqzY";
         System.out.println("Access token (json string): " + accessTokenStr);
 
-
-        String url = "\n" +
-                "https://api.sumsub.com/resources/applicants/67c590dafa06707def346e15/kyt/txns/-/data";
+        String root = "https://api.sumsub.com";
+        String url = "/resources/applicants/67c590dafa06707def346e15/kyt/txns/-/data";
         long ts = Instant.now().getEpochSecond();
         ObjectMapper objectMapper = new ObjectMapper();
         RequestBody requestBody1 = createRequestBody(url);
 
-        Response response = sendPost(url, requestBody1);
+        Response response = sendPost(root+url, requestBody1);
         System.out.println("Response "+ response.toString());
 
         if (response.isSuccessful()) {
